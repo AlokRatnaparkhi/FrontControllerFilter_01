@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -14,29 +16,21 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Servlet Filter implementation class XSSFilter
- */
+
 @WebFilter("/page/*")
 public class XSSFilter implements Filter {
 
-    /**
-     * Default constructor. 
-     */
+   
     public XSSFilter() {
-        // TODO Auto-generated constructor stub
+       
     }
 
-	/**
-	 * @see Filter#destroy()
-	 */
+	
 	public void destroy() {
-		// TODO Auto-generated method stub
+		
 	}
 
-	/**
-	 * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
+	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		
 		
@@ -64,16 +58,15 @@ public class XSSFilter implements Filter {
 			{
 			    String name = (String) e.nextElement();
 			    attr.add(name);
-			    //System.out.println(name);
-			   
+			      
 			    
 			}
 			
 			for(String a: attr)
 			{	String para=req.getParameter(a);
 				
-				System.out.println("Parameter:"+para);
-				if(para.toLowerCase().contains("<")||para.toLowerCase().contains(">")||para.toLowerCase().contains("%")||para.toLowerCase().contains("script")||para.toLowerCase().contains("document")||para.toLowerCase().contains("/")||para.toLowerCase().contains("session")||para.toLowerCase().contains("inner")||para.toLowerCase().contains("html")||para.toLowerCase().contains("alert")||para.toLowerCase().contains("body")||para.toLowerCase().contains("session")||para.toLowerCase().contains(".")||para.toLowerCase().contains("(")||para.toLowerCase().contains(")"))
+				
+				if(clientInputFilter(para))
 				{
 					flag= true;
 					
@@ -98,11 +91,20 @@ public class XSSFilter implements Filter {
 		
 	}
 
-	/**
-	 * @see Filter#init(FilterConfig)
-	 */
+	boolean clientInputFilter(String arg) {
+		String pattern = "^[a-z0-9 \\s @ . - ! ^ + $ ~ { } ? \\' \\\" |  :  * ( ) ^ , = ` ]+$";
+		Pattern r = Pattern.compile(pattern);
+		Matcher m = r.matcher(arg);
+		return !m.find();
+
+	}
+	
+	
+	
+	
+	
 	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		
 	}
 
 }

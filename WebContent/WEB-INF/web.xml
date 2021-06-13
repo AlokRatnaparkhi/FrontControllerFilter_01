@@ -16,9 +16,7 @@
     <servlet-name>CountryInformation</servlet-name>
     <url-pattern>/CountryInformation</url-pattern>
   </servlet-mapping> -->
-
-  
-  
+ 
   <servlet>
     <description>Front Controller Implementation</description>
     <display-name>FrontController</display-name>
