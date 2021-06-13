@@ -16,79 +16,57 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-
 @WebFilter("/page/*")
 public class XSSFilter implements Filter {
 
-   
-    public XSSFilter() {
-       
-    }
+	public XSSFilter() {
 
-	
-	public void destroy() {
-		
 	}
 
-	
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		
-		
-		//Algorithm for XSS detection
-				/* For case study purpose, implementation contains trivial keyword matching however
-				 * it is not reliable solution as there are ways to bypass keyword matching. 
-				 * Purpose of this study is the design. In future, reliable XSS detection algorithm should be 
-				 * plugged in the design
-				 */
-		
-		// pass the request along the filter chain
+	public void destroy() {
+
+	}
+
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+			throws IOException, ServletException {
+
+		// Algorithm for XSS detection
 		boolean flag = false;
-		
-		
+
 		System.out.println("**********************************************");
 		System.out.println("Starting XSS detection engine.....");
-		
-		List<String> attr=new ArrayList<>();
-				
+
+		List<String> attr = new ArrayList<>();
+
 		HttpServletRequest req = (HttpServletRequest) request;
-				
+
 		Enumeration<?> e = request.getParameterNames();
-			
-			while (e.hasMoreElements())
-			{
-			    String name = (String) e.nextElement();
-			    attr.add(name);
-			      
-			    
+
+		while (e.hasMoreElements()) {
+			String name = (String) e.nextElement();
+			attr.add(name);
+
+		}
+
+		for (String a : attr) {
+			String para = req.getParameter(a);
+
+			if (clientInputFilter(para)) {
+				flag = true;
+
 			}
-			
-			for(String a: attr)
-			{	String para=req.getParameter(a);
-				
-				
-				if(clientInputFilter(para))
-				{
-					flag= true;
-					
-					
-					
-				}
-							
-				
-			}
-			
-			if(flag)
-			{
-				System.out.println("Web Request contains possible XSS attack intention");
-				request.getRequestDispatcher("/page/error.html").forward(request, response);
-			}
-			else
-			{	System.out.println("Request is secure. sending for next filter..");
-				chain.doFilter(request, response);
-				System.out.println("**********************************************");
-			}
-			
-		
+
+		}
+
+		if (flag) {
+			System.out.println("Web Request contains possible XSS attack intention");
+			request.getRequestDispatcher("/page/error.html").forward(request, response);
+		} else {
+			System.out.println("Request is secure. sending for next filter..");
+			chain.doFilter(request, response);
+			System.out.println("**********************************************");
+		}
+
 	}
 
 	boolean clientInputFilter(String arg) {
@@ -98,13 +76,9 @@ public class XSSFilter implements Filter {
 		return !m.find();
 
 	}
-	
-	
-	
-	
-	
+
 	public void init(FilterConfig fConfig) throws ServletException {
-		
+
 	}
 
 }
